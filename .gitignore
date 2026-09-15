@@ -59,17 +59,29 @@ sku_matcher/imports/*.xlsx
 !sku_matcher/imports/商品导入模板*.xlsx
 !sku_matcher/imports/**/商品导入模板*.xlsx
 !sku_matcher/imports/商品导入模板*副本*.xlsx
-# SAP 全量导出
-sku_matcher/data_source/A006*.xlsx
+# SAP 全量导出 / 数据源目录
+# 规则按「失败即安全」写：目录里所有表格文件一律挡掉，只白名单放行模板。
+# 这样以后换任何文件名的 SAP 导出（不必以 A006 开头）都自动被挡住，
+# 不需要回来改这个文件。
+sku_matcher/data_source/*.xlsx
+sku_matcher/data_source/*.xls
+sku_matcher/data_source/*.csv
+!sku_matcher/data_source/*模板.xlsx
+!sku_matcher/data_source/.gitkeep
 # 待匹配原始货号清单
 sku_matcher/input/**/*.xlsx
 sku_matcher/input/*.xlsx
+sku_matcher/input/*.xls
+sku_matcher/input/*.csv
 !sku_matcher/input/商品导入模板*.xlsx
 # 分类树 / 待分类源表 / 主数据库
-product_classifier/data/*.xlsx
+# 这三个目录全部是用户自备数据，直接整目录挡
+product_classifier/data/*
 product_classifier/input/*
 product_classifier/master/*
+!product_classifier/data/.gitkeep
 !product_classifier/input/.gitkeep
+!product_classifier/master/.gitkeep
 # 上传成功后的备份台账
 imported/**
 # 登录态快照 / 浏览器抓取产物
