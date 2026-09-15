@@ -27,18 +27,18 @@
 
 ```
 product-data-toolkit/
-├── .gitignore            # 统一忽略规则（.venv/、缓存、结果、客户表、SAP 导出、机密）
-├── pyproject.toml        # 依赖清单（uv 管理）
-├── uv.lock               # 锁定全部依赖版本（换机器可完美复现）
-├── .venv/                # 共享虚拟环境（不进版本库）
-├── full_pipeline.bat        # 总入口：全站点匹配+分类+核对+生成模板，仅中国站自动上传
-├── open_wait.py          # 打开 Excel 等用户核对保存后继续
-├── review_confirm.ps1    # 上传前人工确认窗
-├── station_pick.ps1      # 站点选择窗（中国 / 西班牙 / 希腊）
-├── sku_matcher/          # 货号匹配 + 选站生成模板
-├── product_classifier/       # 中国站商品分类
-├── upload_products_cn/    # station_config.py / site_adapt.py / upload.py
-└── imported/           # 各站点上传成功后的备份
+├── .gitignore              # 统一忽略规则（.venv/、缓存、结果、客户表、SAP 导出、机密）
+├── pyproject.toml          # 依赖清单（uv 管理）
+├── uv.lock                 # 锁定全部依赖版本（换机器可完美复现）
+├── .venv/                  # 共享虚拟环境（不进版本库）
+├── full_pipeline.bat       # 总入口：全站点匹配+分类+核对+生成模板，仅中国站自动上传
+├── open_wait.py            # 打开 Excel 等用户核对保存后继续
+├── review_confirm.ps1      # 上传前人工确认窗
+├── station_pick.ps1        # 站点选择窗（中国 / 西班牙 / 希腊）
+├── sku_matcher/            # 货号匹配 + 选站生成模板
+├── product_classifier/     # 中国站商品分类
+├── upload_products_cn/     # station_config.py / site_adapt.py / upload.py
+└── imported/               # 各站点上传成功后的备份
 ```
 
 **克隆后复现环境（一次性）**
@@ -182,7 +182,7 @@ uv sync                  # 读 uv.lock，自动建 .venv 并装好全部依赖
 3. **不静默丢行**：清理上传辅助列（系统复核）时，所有商品行都会保留，只剥辅助列。
 4. **跨电脑不乱码约定**：
    - 黑窗口提示全部用英文（`.bat` 的 `echo` 与 Python 的 `print` 均为 ASCII），在不同编码下字节一致，绝不乱码；
-   - `.bat` 文件统一 **UTF-8 无 BOM + `chcp 65001`**，中文路径/文件名保留中文（指向真实文件），在 UTF-8 代码页下正常；
+   - `.bat` 文件统一 **UTF-8 无 BOM + `chcp 65001`**；目录与脚本名统一英文，脚本指向的**数据文件**（SAP 导出、分类树、站点模板）保留中文原名，在 UTF-8 代码页下正常；
    - 选站弹窗（`station_pick.ps1`，WinForms 原生 Unicode）与输出 xlsx（openpyxl 以 UTF-8 写出）保持中文，在任何 Windows 与 Excel 下都正常，与控制台代码页无关。
 5. **凭据与数据都不进库**：
    - 凭据：`SITE_USER` / `SITE_PASS` 只走环境变量，脚本里不出现任何账号密码；
