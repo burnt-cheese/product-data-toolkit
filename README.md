@@ -157,7 +157,7 @@ uv sync                  # 读 uv.lock，自动建 .venv 并装好全部依赖
 | 文件 | 作用 |
 |------|------|
 | `full_pipeline.bat` | 总编排脚本（全站点匹配+分类+核对+生成模板，仅中国站自动上传） |
-| `match_and_generate.bat` | sku_matcher入口（轻量：匹配 + 弹窗选站 + 自动分类/核对 + 生成对应站点模板，不自动上传） |
+| `sku_matcher/match_and_generate.bat` | sku_matcher 入口（轻量：匹配 + 弹窗选站 + 自动分类/核对 + 生成对应站点模板，不自动上传） |
 | `open_wait.py` | 用 Excel 打开分类结果，等用户核对保存、关闭文件后自动继续 |
 | `review_confirm.ps1` | PowerShell WinForms 确认窗：展示待填回清单，点「确认回填并上传」才继续，点「取消」则终止（不填回、不上传） |
 | `station_pick.ps1` | PowerShell WinForms 站点选择窗：默认中国站，可改选西班牙站 / 希腊站；任何关闭路径都兜底选中国站，不会卡流程 |

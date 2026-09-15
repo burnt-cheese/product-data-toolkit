@@ -15,6 +15,14 @@
 product_classifier/
 ├── README.md                 # 本说明
 ├── classify.py               # 主程序（分类引擎，开箱即用）
+├── fillback.py               # 人工核对后的「填回主数据库」闭环（scan / prepare / apply / commit）
+├── run_classify.bat          # 启动器：双击=取 input/ 最新表；拖入=分类指定表
+├── classify_houseware.py     # 批量批处理脚本（家居用品 / 咖啡壶 / 床笠类）
+├── classify_bags.py          # 批量批处理脚本（箱包类）
+├── classify_3c.py            # 批量批处理脚本（3C 数码类）
+├── classify_home_textile.py  # 批量批处理脚本（家纺类）
+├── classify_appliance.py     # 批量批处理脚本（厨房小家电类）
+├── classify_4files.py        # 一次跑 4 张表的批处理脚本
 ├── data/
 │   ├── 中国站商品分类.xlsx     # ⭐权威分类树（中国站所有有效 一级/二级/三级）
 │   └── 产品分类cn&es.xlsx     # 全国站分类树（备用参考，勿用作校验标准）
@@ -24,9 +32,13 @@ product_classifier/
 │   └── 商品信息分类_源表.xlsx
 ├── output/                   # 分类结果自动生成到这里
 │   └── 商品信息分类_源表_classified.xlsx
-└── rules/
-    ├── rules.py              # 玩具/发饰儿童/母婴 规则
-    └── rules_full.py         # 厨房/家居/饰品/宠物/电器/节日/户外/箱包 规则
+├── rules/
+│   ├── rules.py              # 玩具/发饰儿童/母婴 规则
+│   └── rules_full.py         # 厨房/家居/饰品/宠物/电器/节日/户外/箱包 规则
+└── tools/                    # 一次性维护脚本（建主库 / 重建分类树 / 检查副本）
+    ├── _build_master.py
+    ├── _rebuild_tree.py
+    └── _inspect_copy.py
 ```
 
 ---

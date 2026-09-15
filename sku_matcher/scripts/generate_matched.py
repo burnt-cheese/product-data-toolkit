@@ -2,16 +2,18 @@
 """
 货号匹配自动化 (可移植项目版) 
 ================================
-项目结构 (整个文件夹可拷到其他电脑) : 
+项目结构 (整个文件夹可拷到其他电脑, 依赖由根目录统一管理) :
   sku_matcher/
-  ├── scripts/generate_matched.py   本脚本
+  ├── scripts/generate_matched.py   本脚本 (实际执行匹配)
+  ├── scripts/run_pipeline.py       单步入口 (python run_pipeline.py match "货号表.xlsx")
+  ├── scripts/keep_cols_dialog.ps1  「保留输入列」选择弹窗 (PowerShell WinForms)
   ├── data_source/A006-货号统计（全部）.xlsx   SAP 导出表 (会更新, 替换同名文件即可) 
   ├── data_source/商品导入模板.xlsx            模板 (仅取 34 列表头布局) 
-  ├── input/                             把要匹配的货号表放这里
-  ├── output/                             结果文件自动输出到这里
-  ├── setup.bat                        其他电脑: 双击一键建 .venv + 装依赖
-  └── 商品匹配.bat                     把货号表拖到它上面即自动出表
+  ├── input/                        把要匹配的货号表放这里
+  ├── output/                       结果文件自动输出到这里
+  └── match_and_generate.bat        把货号表拖到它上面即自动出表
 
+  环境: 在根目录执行 `uv sync` 生成 .venv (旧的 setup.bat / requirements.txt 已废弃删除) 
 用法: 
   python generate_matched.py                     # 默认读 input/货号信息.xlsx
   python generate_matched.py "某货号表.xlsx"      # 指定输入文件 (任意路径) 
@@ -89,7 +91,7 @@ INPUT = _input_arg if _input_arg is not None else IN_DIR / "货号信息.xlsx"
 if not os.path.exists(INPUT):
     print(f"[ERROR] Input goods-code table not found: {INPUT}")
     print("      用法1: python generate_matched.py \"货号表.xlsx\"")
-    print("      Usage2: drag the goods-code file onto 货号匹配-拖入即用.bat")
+    print("      Usage2: drag the goods-code file onto match_and_generate.bat")
     sys.exit(1)
 
 # .xls 老格式自动转换: openpyxl 不支持 .xls, 先转成临时 .xlsx 再走正常流程

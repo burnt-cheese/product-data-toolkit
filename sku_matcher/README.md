@@ -13,15 +13,17 @@
 ```
 sku_matcher/
 ├── scripts/
-│   └── generate_matched.py    主脚本：货号匹配 SAP（Python）
+│   ├── generate_matched.py    主脚本：货号匹配 SAP（Python）
+│   ├── run_pipeline.py        单步入口（命令行调用）
+│   └── keep_cols_dialog.ps1   「保留输入列」选择弹窗（WinForms）
 ├── data_source/                     数据文件放这里
 │   ├── A006-货号统计（全部）.xlsx   SAP 导出表（更新后直接替换同名文件）
 │   └── 商品导入模板.xlsx            模板（一般不用动）
 ├── input/                      把要匹配的货号表放这里（或用拖入方式，不限位置）
 ├── output/                      ★交付文件都在这里：
 │   └── sku_match_result.xlsx          匹配结果（34 列上传格式，含公式）
-├── 商品匹配.bat               启动器：把货号表拖到它上面即自动出表
-└── readme.md                  本说明
+├── match_and_generate.bat      启动器：把货号表拖到它上面即自动出表
+└── README.md                   本说明
 ```
 
 > 依赖与环境由根目录统一管理（见根 README 第〇节）：
@@ -30,7 +32,7 @@ sku_matcher/
 
 ## 三、日常使用（单步）
 
-双击项目文件夹里的 `商品匹配.bat`，或把货号表拖到它上面：
+双击项目文件夹里的 `match_and_generate.bat`，或把货号表拖到它上面：
 
 1. 货号匹配 SAP，输出 `output\sku_match_result.xlsx`
 2. SAP 里没有的货号，结果表的「未匹配货号」sheet 会列出，对应行只有货号、其余留空

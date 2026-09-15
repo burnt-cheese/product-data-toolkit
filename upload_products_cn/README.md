@@ -6,7 +6,7 @@
 ```
 upload_products_cn/
 ├── upload.py              # 主程序：登录 → 上传 xlsx → 轮询任务中心 → 抓取成败明细
-├── upload.bat             # 一键启动器（拖放/双击/命令行；含固定账号，仅本机）
+├── upload.bat             # 一键启动器（拖放/双击/命令行）；账号密码走环境变量，文件内不含凭据
 ├── header_template.txt    # 基准表头（33 列，表头严格校验用；--save-template-header 可刷新）
 ├── clean_old_runs.py      # 清理运行期产物（按天清旧的失败 CSV / 日志）
 ├── README.md
@@ -27,10 +27,28 @@ upload_products_cn/
 - **失败处理**：解析“导入完成”成功弹窗与“请检查导入数据”校验失败弹窗；失败行的**错误原因**（如「第 N 行：找不到1级商品分类」）会被抽取并写入 `failed/failed_rows_*.csv`（含原始行号 + 整行原数据）；运行记 `upload.log`；有失败非零退出；**不自动重试**。
 
 ## 安装
+
+依赖由**根目录统一管理**（`pyproject.toml` + `uv.lock`），不要在子目录单独 pip：
+
 ```bash
-pip install playwright openpyxl
+cd ..            # 回到仓库根目录 product-data-toolkit
+uv sync          # 自动创建 .venv 并装好 openpyxl / playwright / lxml / xlrd 等
+```
+
+```bash
 # 本机已装系统 Chrome，upload.py 用 channel="chrome" 复用，无需下载内核。
 # 如需改用 Playwright 自带 chromium：playwright install chromium，再把 upload.py 里 launch 的 channel 改为 None。
+```
+
+**登录凭据**：不写在任何文件里，通过环境变量提供（`upload.bat` 会检查）：
+
+```bash
+set SITE_USER=你的账号      # cmd
+set SITE_PASS=你的密码
+```
+```powershell
+$env:SITE_USER = "你的账号"   # PowerShell
+$env:SITE_PASS = "你的密码"
 ```
 
 ## 运行
