@@ -12,7 +12,7 @@
 - COMPUTED        : 计算规则：目标列 = 源列的值（按行复制），如 最低起订量 = 中包每包可装个数。
 - LOOKUP          : 查表规则：目标列 = A006[源列]（按 匹配键列 匹配）。如 ES 西语品名←A006.外文名称(按货号)。
 - TRANSLATE       : 翻译规则：目标列 = translate(源列, src->tgt)。如 GR 希腊语品名←translate(品名, ZH->EL)。
-- BACKUP_DIR      : 上传/生成后备份目录（已导入表格/<站>）。
+- BACKUP_DIR      : 上传/生成后备份目录（imported/<station>）。
 - ALIASES         : 源表头同义词，做模糊匹配时用。
 """
 
@@ -20,7 +20,7 @@ import os
 
 BASE = os.path.dirname(os.path.abspath(__file__))          # upload_products_cn/
 WORKSPACE = os.path.dirname(BASE)                           # product-data-toolkit/
-BACKUP_ROOT = os.path.join(WORKSPACE, "已导入表格")          # 备份根目录
+BACKUP_ROOT = os.path.join(WORKSPACE, "imported")          # 备份根目录
 
 TEMPLATES_DIR = os.path.join(BASE, "templates")
 CACHE_DIR = os.path.join(BASE, "cache")
@@ -129,8 +129,7 @@ TRANSLATE = {
 }
 
 STATION_NAMES = {"cn": "中国站", "es": "西班牙站", "gr": "希腊站"}
-BACKUP_DIR = {s: os.path.join(BACKUP_ROOT, n) for s, n in
-              (("cn", "中国"), ("es", "西班牙"), ("gr", "希腊"))}
+BACKUP_DIR = {s: os.path.join(BACKUP_ROOT, s) for s in ("cn", "es", "gr")}
 
 # ---------------------------------------------------------------------------
 # 源表头同义词（模糊匹配：源列名可能带变体）

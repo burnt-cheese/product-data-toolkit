@@ -3,8 +3,8 @@
 把「含货号的清单」一键变成「可上传的完整商品表」的流水线。
 每个环节都是独立工具，可单独使用，也可由两个总入口串起来跑：
 
-- **`货号匹配器\货号匹配-选站生成.bat`** —— 匹配 + 自动分类/核对 + 选站点生成对应上传模板（不自动上传）
-- **`一键全流程.bat`** —— 完整：匹配 → 全站点自动分类 → 人工核对 → 选站点 → 生成模板 → 中国站自动上传
+- **`sku_matcher\match_and_generate.bat`** —— 匹配 + 自动分类/核对 + 选站点生成对应上传模板（不自动上传）
+- **`full_pipeline.bat`** —— 完整：匹配 → 全站点自动分类 → 人工核对 → 选站点 → 生成模板 → 中国站自动上传
 - **`upload_products_cn\upload.bat`** —— 单独上传（cn/es/gr）
 
 > ### 关于本仓库
@@ -13,8 +13,8 @@
 > 后台地址已统一替换为 `example.com` 占位符。
 >
 > 想实际跑起来，请自备三样东西：
-> 1. **你所在站点的上传模板**（放入 `upload_products_cn/templates/` 与 `货号匹配器/数据源/`）
-> 2. **自己的商品分类树**（放入 `商品分类工作区/data/中国站商品分类.xlsx`）
+> 1. **你所在站点的上传模板**（放入 `upload_products_cn/templates/` 与 `sku_matcher/data_source/`）
+> 2. **自己的商品分类树**（放入 `product_classifier/data/中国站商品分类.xlsx`）
 > 3. **后台登录凭据**，通过环境变量 `SITE_USER` / `SITE_PASS` 提供，不要写进任何文件
 >
 > `station_config.UPLOAD_URLS` 与 `upload.py` 顶部的 `UPLOAD_URL` 也要换成你自己的后台地址。
@@ -31,14 +31,14 @@ product-data-toolkit/
 ├── pyproject.toml        # 依赖清单（uv 管理）
 ├── uv.lock               # 锁定全部依赖版本（换机器可完美复现）
 ├── .venv/                # 共享虚拟环境（不进版本库）
-├── 一键全流程.bat        # 总入口：全站点匹配+分类+核对+生成模板，仅中国站自动上传
+├── full_pipeline.bat        # 总入口：全站点匹配+分类+核对+生成模板，仅中国站自动上传
 ├── open_wait.py          # 打开 Excel 等用户核对保存后继续
 ├── review_confirm.ps1    # 上传前人工确认窗
 ├── station_pick.ps1      # 站点选择窗（中国 / 西班牙 / 希腊）
-├── 货号匹配器/          # 货号匹配 + 选站生成模板
-├── 商品分类工作区/       # 中国站商品分类
+├── sku_matcher/          # 货号匹配 + 选站生成模板
+├── product_classifier/       # 中国站商品分类
 ├── upload_products_cn/    # station_config.py / site_adapt.py / upload.py
-└── 已导入表格/           # 各站点上传成功后的备份
+└── imported/           # 各站点上传成功后的备份
 ```
 
 **克隆后复现环境（一次性）**
@@ -56,9 +56,9 @@ uv sync                  # 读 uv.lock，自动建 .venv 并装好全部依赖
 
 ## 一、两条工作路径总览
 
-| | 货号匹配器（轻量） | 一键全流程（完整） |
+| | sku_matcher（轻量） | full_pipeline（完整） |
 |---|---|---|
-| 入口 | `货号匹配器\货号匹配-选站生成.bat` | `一键全流程.bat` |
+| 入口 | `sku_matcher\match_and_generate.bat` | `full_pipeline.bat` |
 | 匹配 SAP | ✅ | ✅ |
 | 自动分类 | ✅（cn/es/gr） | ✅（cn/es/gr） |
 | 人工核对/填回 | ✅ | ✅ |
@@ -72,9 +72,9 @@ uv sync                  # 读 uv.lock，自动建 .venv 并装好全部依赖
 
 ---
 
-## 二、货号匹配器：匹配 + 分类 + 选站生成模板（轻量）
+## 二、sku_matcher：匹配 + 分类 + 选站生成模板（轻量）
 
-**入口**：`货号匹配器\货号匹配-选站生成.bat`
+**入口**：`sku_matcher\match_and_generate.bat`
 
 把货号清单 `.xlsx` 拖到这个 bat 上即可：
 
@@ -82,21 +82,21 @@ uv sync                  # 读 uv.lock，自动建 .venv 并装好全部依赖
 货号清单.xlsx ─拖到 bat上─▶ [Step 1/4] 匹配 SAP（A006-货号统计）
                               [Step 2/4] 弹窗选站（cn / es / gr）
                               [Step 3/4] 自动分类 + 人工核对/填回（cn/es/gr 相同）
-                              [Step 4/4] 生成 <站>_货号匹配结果_<时间>.xlsx
+                              [Step 4/4] 生成 <station>_sku_match_result_<timestamp>.xlsx
 ```
 
-- 匹配输出：`货号匹配器\输出\货号匹配结果.xlsx`
-- 分类输出：`商品分类工作区\output\货号匹配结果_已分类.xlsx`
-- 站点模板：`货号匹配器\输出\<站>_货号匹配结果_<时间>.xlsx`
+- 匹配输出：`sku_matcher\output\sku_match_result.xlsx`
+- 分类输出：`product_classifier\output\sku_match_result_classified.xlsx`
+- 站点模板：`sku_matcher\output\<station>_sku_match_result_<timestamp>.xlsx`
 - cn / es / gr 在轻量入口都执行**自动分类 + 人工核对/填回**，但**都不自动上传**；上传请走 `upload_products_cn\upload.bat`。
 
 ---
 
-## 三、一键全流程：完整链路（全站点分类，仅中国站上传）
+## 三、full_pipeline：完整链路（全站点分类，仅中国站上传）
 
-**入口**：`一键全流程.bat`
+**入口**：`full_pipeline.bat`
 
-把原始货号清单 `.xlsx` 直接拖到 bat 上（也可命令行 `一键全流程.bat "货号清单.xlsx"`）。
+把原始货号清单 `.xlsx` 直接拖到 bat 上（也可命令行 `full_pipeline.bat "货号清单.xlsx"`）。
 输入文件中只需有货号字段即可运行。
 
 ```
@@ -115,11 +115,11 @@ uv sync                  # 读 uv.lock，自动建 .venv 并装好全部依赖
 ```
 
 **关键文件链路**
-- 匹配输出：`货号匹配器\输出\货号匹配结果.xlsx`
-- 分类输出：`商品分类工作区\output\货号匹配结果_已分类.xlsx`
-- 站点模板：`货号匹配器\输出\<站>_货号匹配结果_<时间>.xlsx`（[4] 自动生成）
+- 匹配输出：`sku_matcher\output\sku_match_result.xlsx`
+- 分类输出：`product_classifier\output\sku_match_result_classified.xlsx`
+- 站点模板：`sku_matcher\output\<station>_sku_match_result_<timestamp>.xlsx`（[4] 自动生成）
 - 上传输入：上一步生成的站点模板（**不是**分类结果本身）
-- 上传成功备份：`已导入表格\<站>\`
+- 上传成功备份：`imported\<station>\`
 
 > 三个站点走这条流程时**[1]-[4] 全部执行**（自动分类 + 人工核对/填回一致）；
 > 差异只在最后：仅 `cn` 触发自动上传，`es/gr` 生成模板后停下，由人工拖到 `upload.bat` 上传。
@@ -137,14 +137,14 @@ uv sync                  # 读 uv.lock，自动建 .venv 并装好全部依赖
 | 希腊 gr | 希腊语品名 ← 品名 机器翻译（中文→希腊语） | 不填 | `EUR` | `SampleBrand` | `N` | = 中包每包可装个数 | 零售价 3 列保留导入文件原值 |
 
 **怎么选站点**（两种方式都支持弹窗）
-- 走 `一键全流程.bat`：在 [0] 先弹站点选择窗（默认「中国站」，可改选 es / gr）。
-- 走 `货号匹配-选站生成.bat`：匹配前/后弹出同一选择窗。
-- 命令行直接指定：`python upload_products_cn\site_adapt.py --input 货号匹配结果.xlsx --station cn|es|gr`（不传 `--station` 即弹窗，默认 cn）。
+- 走 `full_pipeline.bat`：在 [0] 先弹站点选择窗（默认「中国站」，可改选 es / gr）。
+- 走 `match_and_generate.bat`：匹配前/后弹出同一选择窗。
+- 命令行直接指定：`python upload_products_cn\site_adapt.py --input sku_match_result.xlsx --station cn|es|gr`（不传 `--station` 即弹窗，默认 cn）。
 - 单独上传：`upload_products_cn\upload.bat "文件.xlsx" es|gr`（默认 `cn`），可再加 `dry` 试跑。
 
 **转换与备份**
-- `upload_products_cn/site_adapt.py` 把 China 形态的结果按上面规则转换成目标站点模板，输出到 `货号匹配器\输出\<站>_货号匹配结果_<时间>.xlsx`。
-- 备份**只发生在「上传成功之后」**：`已导入表格\<站>\` 只放确认导入成功的表格——`site_adapt` 生成时默认不备份（需留档可加 `--backup`），`upload.py` 仅在任务中心确认「已完成且无失败行」后才备份；站点报失败 / 轮询超时 / 未确认完成都不备份，避免污染台账。
+- `upload_products_cn/site_adapt.py` 把 China 形态的结果按上面规则转换成目标站点模板，输出到 `sku_matcher\output\<station>_sku_match_result_<timestamp>.xlsx`。
+- 备份**只发生在「上传成功之后」**：`imported\<station>\` 只放确认导入成功的表格——`site_adapt` 生成时默认不备份（需留档可加 `--backup`），`upload.py` 仅在任务中心确认「已完成且无失败行」后才备份；站点报失败 / 轮询超时 / 未确认完成都不备份，避免污染台账。
 - 希腊语翻译用免费端点（中文→希腊语），带**持久化缓存**（`upload_products_cn\cache\trans_el.pkl`，重跑命中缓存不再调接口）与**连续失败熔断**（连续失败 8 次即停止剩余翻译并告警，不会拖死流程）；失败行留空，重跑可继续补译。首次翻译约需 10 分钟，之后重跑秒级。
 
 > 三个站点的后台地址都在 `station_config.UPLOAD_URLS` 里集中配置，公开版已替换为
@@ -156,8 +156,8 @@ uv sync                  # 读 uv.lock，自动建 .venv 并装好全部依赖
 
 | 文件 | 作用 |
 |------|------|
-| `一键全流程.bat` | 总编排脚本（全站点匹配+分类+核对+生成模板，仅中国站自动上传） |
-| `货号匹配-选站生成.bat` | 货号匹配器入口（轻量：匹配 + 弹窗选站 + 自动分类/核对 + 生成对应站点模板，不自动上传） |
+| `full_pipeline.bat` | 总编排脚本（全站点匹配+分类+核对+生成模板，仅中国站自动上传） |
+| `match_and_generate.bat` | sku_matcher入口（轻量：匹配 + 弹窗选站 + 自动分类/核对 + 生成对应站点模板，不自动上传） |
 | `open_wait.py` | 用 Excel 打开分类结果，等用户核对保存、关闭文件后自动继续 |
 | `review_confirm.ps1` | PowerShell WinForms 确认窗：展示待填回清单，点「确认回填并上传」才继续，点「取消」则终止（不填回、不上传） |
 | `station_pick.ps1` | PowerShell WinForms 站点选择窗：默认中国站，可改选西班牙站 / 希腊站；任何关闭路径都兜底选中国站，不会卡流程 |
@@ -186,7 +186,7 @@ uv sync                  # 读 uv.lock，自动建 .venv 并装好全部依赖
    - 选站弹窗（`station_pick.ps1`，WinForms 原生 Unicode）与输出 xlsx（openpyxl 以 UTF-8 写出）保持中文，在任何 Windows 与 Excel 下都正常，与控制台代码页无关。
 5. **凭据与数据都不进库**：
    - 凭据：`SITE_USER` / `SITE_PASS` 只走环境变量，脚本里不出现任何账号密码；
-   - 运行产物：`session.json`（登录态 cookies）、`last_run.json`、`*.log`、`failed/`、`output/`、`已导入表格/` 均被根 `.gitignore` 忽略；
+   - 运行产物：`session.json`（登录态 cookies）、`last_run.json`、`*.log`、`failed/`、`output/`、`imported/` 均被根 `.gitignore` 忽略；
    - 业务数据：客户商品导入表、SAP 全量导出、待匹配原始清单一律不入库。
    提交前用 `git status` 确认没有数据文件被 `git add` 进来。
 6. 每个子目录都自带 README，深入细节请看对应目录。

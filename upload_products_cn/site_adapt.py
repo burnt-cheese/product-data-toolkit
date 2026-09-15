@@ -2,7 +2,7 @@
 """
 站点适配转换器 (site_adapt) 
 ===========================
-把 China 形态的「货号匹配结果.xlsx」 (或任意已按模板填好的源文件) 转换成
+把 China 形态的「sku_match_result.xlsx」 (或任意已按模板填好的源文件) 转换成
 目标站点 (cn/es/gr) 的上传模板形态, 并应用各站规则: 
 
   - 固定填值 (税率/币种/品牌/打折/原产地) 
@@ -13,14 +13,14 @@
 
 站点选择: 不传 --station 会弹 WinForms 窗口 (station_pick.ps1) 让你选, 默认中国站.
 
-备份: 默认不备份——按用户要求, 仅当 upload.py **上传成功后**才备份到 已导入表格/<站>/.
+备份: 默认不备份——按用户要求, 仅当 upload.py **上传成功后**才备份到 imported/<station>/.
  (需要生成时就留档可显式加 --backup) 
 
 用法: 
-  python site_adapt.py --input 货号匹配结果.xlsx                # 弹窗选站
-  python site_adapt.py --station cn --input 货号匹配结果.xlsx
-  python site_adapt.py --station es --input 货号匹配结果.xlsx --out 输出
-  python site_adapt.py --station gr --input 货号匹配结果.xlsx --pathfile 上次生成.txt
+  python site_adapt.py --input sku_match_result.xlsx                # 弹窗选站
+  python site_adapt.py --station cn --input sku_match_result.xlsx
+  python site_adapt.py --station es --input sku_match_result.xlsx --out output
+  python site_adapt.py --station gr --input sku_match_result.xlsx --pathfile last_generated.txt
 """
 
 import argparse
@@ -38,8 +38,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import station_config as SC
 
 WORKSPACE = SC.WORKSPACE
-DEFAULT_A006 = os.path.join(WORKSPACE, "货号匹配器", "数据源", "A006-货号统计（全部）.xlsx")
-DEFAULT_OUT = os.path.join(WORKSPACE, "货号匹配器", "输出")
+DEFAULT_A006 = os.path.join(WORKSPACE, "sku_matcher", "data_source", "A006-货号统计（全部）.xlsx")
+DEFAULT_OUT = os.path.join(WORKSPACE, "sku_matcher", "output")
 
 ILLEGAL_B = re.compile(rb"[\x00-\x08\x0b\x0c\x0e-\x1f]")
 
@@ -474,7 +474,7 @@ def adapt(input_path, station, out_dir, a006_path, backup=False, pathfile=None):
         except Exception as e:
             print(f"  [WARN] 写出 pathfile 失败 (不影响生成) : {e}")
 
-    # 备份到 已导入表格/<站>/ (默认关闭, 改由上传成功后备份) 
+    # 备份到 imported/<station>/ (默认关闭, 改由上传成功后备份) 
     bak_path = None
     if backup:
         bdir = SC.BACKUP_DIR[station]
@@ -495,10 +495,10 @@ def main():
     ap.add_argument("--station", choices=["cn", "es", "gr"],
                     help="目标站点; 不传则弹窗选择 (默认中国站) ")
     ap.add_argument("--input", required=True, help="源 xlsx (China 形态匹配结果, 或已按模板填好的文件) ")
-    ap.add_argument("--out", default=DEFAULT_OUT, help="输出目录 (默认 货号匹配器/输出) ")
+    ap.add_argument("--out", default=DEFAULT_OUT, help="输出目录 (默认 sku_matcher/输出) ")
     ap.add_argument("--a006", default=DEFAULT_A006, help="A006 路径 (西语品名查表用) ")
     ap.add_argument("--backup", action="store_true",
-                    help="生成时即备份到 已导入表格/<站>/ (默认不备份, 改由上传成功后备份) ")
+                    help="生成时即备份到 imported/<station>/ (默认不备份, 改由上传成功后备份) ")
     ap.add_argument("--pathfile", help="把生成文件的绝对路径写入该文件, 供 bat 串联读取")
     args = ap.parse_args()
 

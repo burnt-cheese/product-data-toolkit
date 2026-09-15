@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-货号匹配器（单步版）
+sku_matcher（单步版）
 ====================
     python run_pipeline.py match [货号表.xlsx]
     或: python run_pipeline.py [货号表.xlsx]   （默认即 match）
-    → 货号匹配 SAP，输出 输出\货号匹配结果.xlsx
+    → 货号匹配 SAP，输出 output\sku_match_result.xlsx
 """
 import os, sys, subprocess
 from openpyxl import load_workbook
@@ -13,8 +13,8 @@ BASE = os.path.dirname(os.path.abspath(__file__))
 PROJ = os.path.dirname(BASE)
 PY   = sys.executable
 GEN  = os.path.join(BASE, "generate_matched.py")
-OUT  = os.path.join(PROJ, "输出")
-RES  = os.path.join(OUT, "货号匹配结果.xlsx")
+OUT  = os.path.join(PROJ, "output")
+RES  = os.path.join(OUT, "sku_match_result.xlsx")
 
 def run(script, *args):
     """流式执行子脚本：边跑边打印，让用户看到 SAP 解析等耗时步骤的进度。
@@ -55,7 +55,7 @@ def cmd_match(inp):
     n_unc = count_unmatched()
     if n_unc > 0:
         print(f"\n>>> 有 {n_unc} 个货号未匹配（SAP 中无此货号）")
-        print("    请直接在 输出\\货号匹配结果.xlsx 的「未匹配货号」sheet 对应行补充：")
+        print("    请直接在 output\\sku_match_result.xlsx 的「未匹配货号」sheet 对应行补充：")
         print("    品名/条形码/采购单价/供应商 等信息，保存后再跑一次本工具即可。")
     else:
         print("\n>>> 全部货号均已匹配，无需人工补充")
@@ -64,7 +64,7 @@ def main():
     args = sys.argv[1:]
     # 第一步 match：python run_pipeline.py match [货号表.xlsx]
     # 简化调用：python run_pipeline.py [货号表.xlsx]
-    inp = os.path.join(PROJ, "输入", "货号信息.xlsx")
+    inp = os.path.join(PROJ, "input", "货号信息.xlsx")
     if args:
         if args[0] == "match":
             if len(args) > 1:

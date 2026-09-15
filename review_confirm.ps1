@@ -1,6 +1,6 @@
 ﻿# review_confirm.ps1 — 待审核商品分类填回「确认按钮」窗口（Windows Forms）
 # =====================================================================
-# 由 一键全流程.bat 在用户关掉 Excel 后调用：
+# 由 full_pipeline.bat 在用户关掉 Excel 后调用：
 #   powershell -NoProfile -ExecutionPolicy Bypass -File review_confirm.ps1 <候选JSON>
 #
 # 行为：

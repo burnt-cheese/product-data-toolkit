@@ -16,24 +16,24 @@ REM ============================================
 
 set "ROOT=%~dp0"
 set "MATCH_BAT=%ROOT%.venv\Scripts\python.exe"
-set "MATCH_SCRIPT=%ROOT%货号匹配器\scripts\run_pipeline.py"
-set "CLASSIFY_BAT=%ROOT%商品分类工作区\运行分类.bat"
+set "MATCH_SCRIPT=%ROOT%sku_matcher\scripts\run_pipeline.py"
+set "CLASSIFY_BAT=%ROOT%product_classifier\run_classify.bat"
 set "UPLOAD_BAT=%ROOT%upload_products_cn\upload.bat"
 set "PY=%ROOT%.venv\Scripts\python.exe"
 if not exist "%PY%" set "PY=python"
-set "FB=%ROOT%商品分类工作区\fillback.py"
+set "FB=%ROOT%product_classifier\fillback.py"
 set "OPENWAIT=%ROOT%open_wait.py"
-set "SNAP=%ROOT%商品分类工作区\output\货号匹配结果_待审核快照.json"
-set "CAND=%ROOT%商品分类工作区\output\货号匹配结果_填回候选.json"
+set "SNAP=%ROOT%product_classifier\output\sku_match_result_review_snapshot.json"
+set "CAND=%ROOT%product_classifier\output\sku_match_result_fillback_candidates.json"
 set "REVIEW=%ROOT%review_confirm.ps1"
 set "STATION_PICK=%ROOT%station_pick.ps1"
 set "ADAPT=%ROOT%upload_products_cn\site_adapt.py"
-set "OUTDIR=%ROOT%货号匹配器\输出"
+set "OUTDIR=%ROOT%sku_matcher\output"
 
 set "SRC=%~1"
 if "%SRC%"=="" (
     echo [ERROR] Drag a goods-code xlsx onto this bat to start.
-    echo         Or run: 一键全流程.bat "货号清单.xlsx"
+    echo         Or run: full_pipeline.bat "货号清单.xlsx"
     pause
     exit /b 1
 )
@@ -43,8 +43,8 @@ if not exist "%SRC%" (
     exit /b 1
 )
 
-set "F1=%ROOT%货号匹配器\输出\货号匹配结果.xlsx"
-set "F2=%ROOT%商品分类工作区\output\货号匹配结果_已分类.xlsx"
+set "F1=%ROOT%sku_matcher\output\sku_match_result.xlsx"
+set "F2=%ROOT%product_classifier\output\sku_match_result_classified.xlsx"
 
 REM ============================================
 REM  [0] pick station right after drop
@@ -53,7 +53,7 @@ echo.
 echo ============================================
 echo  [0] Select target station
 echo ============================================
-set "STATION_FILE=%ROOT%商品分类工作区\output\station_pick.txt"
+set "STATION_FILE=%ROOT%product_classifier\output\station_pick.txt"
 if exist "%STATION_FILE%" del /f "%STATION_FILE%" >nul 2>&1
 powershell -NoProfile -ExecutionPolicy Bypass -File "%STATION_PICK%" "%STATION_FILE%"
 set "STATION=cn"
@@ -120,7 +120,7 @@ echo.
 echo ============================================
 echo  [4/4] Generating %STATION% upload table
 echo ============================================
-set "GEN_FILE=%ROOT%商品分类工作区\output\last_generated.txt"
+set "GEN_FILE=%ROOT%product_classifier\output\last_generated.txt"
 if exist "%GEN_FILE%" del /f "%GEN_FILE%" >nul 2>&1
 "%PY%" "%ADAPT%" --station %STATION% --input "%F2%" --out "%OUTDIR%" --pathfile "%GEN_FILE%"
 set "F3="

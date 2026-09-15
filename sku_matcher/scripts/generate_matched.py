@@ -3,17 +3,17 @@
 货号匹配自动化 (可移植项目版) 
 ================================
 项目结构 (整个文件夹可拷到其他电脑) : 
-  货号匹配器/
+  sku_matcher/
   ├── scripts/generate_matched.py   本脚本
-  ├── 数据源/A006-货号统计（全部）.xlsx   SAP 导出表 (会更新, 替换同名文件即可) 
-  ├── 数据源/商品导入模板.xlsx            模板 (仅取 34 列表头布局) 
-  ├── 输入/                             把要匹配的货号表放这里
-  ├── 输出/                             结果文件自动输出到这里
+  ├── data_source/A006-货号统计（全部）.xlsx   SAP 导出表 (会更新, 替换同名文件即可) 
+  ├── data_source/商品导入模板.xlsx            模板 (仅取 34 列表头布局) 
+  ├── input/                             把要匹配的货号表放这里
+  ├── output/                             结果文件自动输出到这里
   ├── setup.bat                        其他电脑: 双击一键建 .venv + 装依赖
   └── 商品匹配.bat                     把货号表拖到它上面即自动出表
 
 用法: 
-  python generate_matched.py                     # 默认读 输入/货号信息.xlsx
+  python generate_matched.py                     # 默认读 input/货号信息.xlsx
   python generate_matched.py "某货号表.xlsx"      # 指定输入文件 (任意路径) 
   python generate_matched.py "xx.xlsx" --sap "A006.xlsx" --tpl "模板.xlsx"  # 覆盖数据源
 
@@ -34,14 +34,14 @@ from openpyxl import load_workbook, Workbook
 
 # ===================== 项目内路径 (自动定位, 无需修改) =====================
 BASE    = Path(__file__).resolve().parent.parent          # 项目根
-DATA    = BASE / "数据源"
-IN_DIR  = BASE / "输入"
-OUT_DIR = BASE / "输出"
+DATA    = BASE / "data_source"
+IN_DIR  = BASE / "input"
+OUT_DIR = BASE / "output"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 SAP  = DATA / "A006-货号统计（全部）.xlsx"
 TPL  = DATA / "商品导入模板.xlsx"
-OUT  = OUT_DIR / "货号匹配结果.xlsx"
+OUT  = OUT_DIR / "sku_match_result.xlsx"
 
 # ---------- .xls 老格式(BIFF)自动转换 ----------
 # 放在顶层代码 (INPUT 解析) 之前, 因为该代码会在模块加载时立即执行并调用本函数.
@@ -108,16 +108,16 @@ if INPUT.suffix.lower() == ".xls":
     INPUT = _converted
 if not os.path.exists(SAP):
     print(f"[ERROR] SAP source not found: {SAP}")
-    print("      Put the SAP export (A006-货号统计（全部）.xlsx) into the 数据源 folder")
+    print("      Put the SAP export (A006-货号统计（全部）.xlsx) into the data_source folder")
     sys.exit(1)
 if not os.path.exists(TPL):
     print(f"[ERROR] Product import template not found: {TPL}")
-    print("      Put 商品导入模板.xlsx into the 数据源 folder")
+    print("      Put 商品导入模板.xlsx into the data_source folder")
     sys.exit(1)
 
-# 折扣白名单 (供应商名称, 命中则「是否可以打折」=N) 
-WHITE = {"示例供应商A","示例供应商B",
-         "示例供应商C","示例供应商D","示例供应商E"}
+# 折扣白名单 (供应商名称, 命中则「是否可以打折」=N)
+# 【公开版】真实供应商名已替换为占位符 —— 请填入你自己 SAP 里的「业务伙伴名称」原文
+WHITE = {"示例供应商A", "示例供应商B", "示例供应商C", "示例供应商D", "示例供应商E"}
 WL_CONST = "{" + ";".join(f'"{w}"' for w in WHITE) + "}"
 
 ILLEGAL     = re.compile(r'[\x00-\x08\x0b\x0c\x0e-\x1f]')     # str 模式 (兼容旧用法) 
@@ -136,7 +136,7 @@ def norm_key(v):
     return str(v).strip()
 
 # ---------- 容错读 SAP (自动清洗垂直制表符等非法 XML 字符) ----------
-# 缓存策略: SAP 文件 26MB+, 解析需 20+ 秒, 将结果 pickle 到 数据源/.sap_cache/.
+# 缓存策略: SAP 文件 26MB+, 解析需 20+ 秒, 将结果 pickle 到 data_source/.sap_cache/.
 # 缓存键 = (文件名, mtime, size), SAP 内容有更新时自动失效.
 _CACHE_DIR = DATA / ".sap_cache"
 _CACHE_DIR.mkdir(parents=True, exist_ok=True)

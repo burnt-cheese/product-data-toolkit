@@ -2,17 +2,17 @@
 """
 厨房小家电(厨房/个护小家电) 希腊站上传表：按中国站分类树分类。
 输入：input/希腊站上传_厨房小家电.xlsx
-输出：output/希腊站上传_厨房小家电_已分类.xlsx
+输出：output/希腊站上传_厨房小家电_classified.xlsx
 数据：真实商品行 2..47（行 48+ 为空），共 46 个。
 """
 import openpyxl, os, re
 from collections import Counter
 
-HERE = os.path.dirname(os.path.abspath(__file__))          # 商品分类工作区/
+HERE = os.path.dirname(os.path.abspath(__file__))          # product_classifier/
 ROOT = os.path.dirname(HERE)                               # 仓库根
 SRC = os.path.join(ROOT, "input", "希腊站上传_厨房小家电.xlsx")
 TREE = os.path.join(HERE, "data", "中国站商品分类.xlsx")
-OUT = os.path.join(HERE, "output", "希腊站上传_厨房小家电_已分类.xlsx")
+OUT = os.path.join(HERE, "output", "希腊站上传_厨房小家电_classified.xlsx")
 
 # ---------- 1. 中国站分类树合法 3 级链路 ----------
 twb = openpyxl.load_workbook(TREE, data_only=True)

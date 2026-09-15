@@ -16,7 +16,7 @@ classify.py — 商品自动分类主程序（可复用，四层逻辑）
 用法：
   python classify.py                # 自动取 input/ 下最新 .xlsx
   python classify.py 路径/to/表.xlsx  # 指定输入
-输出：output/<原文件名>_已分类.xlsx
+输出：output/<input-stem>_classified.xlsx
 """
 import openpyxl, os, re, sys, glob, importlib.util, collections
 
@@ -555,5 +555,5 @@ if __name__ == '__main__':
         sys.exit(1)
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     base = os.path.splitext(os.path.basename(src))[0]
-    out = os.path.join(OUTPUT_DIR, base + '_已分类.xlsx')
+    out = os.path.join(OUTPUT_DIR, base + '_classified.xlsx')
     classify(src, out)

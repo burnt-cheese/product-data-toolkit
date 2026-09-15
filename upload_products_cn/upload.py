@@ -119,7 +119,7 @@ def task_center_url_of(upload_url: str) -> str:
 
 
 def backup_after_upload(xlsx_path: Path, station: str) -> str | None:
-    """上传成功后把提交文件备份到 已导入表格/<站>/（覆盖同名，幂等安全）。
+    """上传成功后把提交文件备份到 imported/<station>/（覆盖同名，幂等安全）。
 
     返回备份路径或 None（未配置站点 / 目录不可建）。失败仅告警不阻断主流程。
     """
@@ -651,7 +651,7 @@ def write_failed_csv(error_messages, header, data_rows, reason_note: str,
         return None
     FAILED_DIR.mkdir(exist_ok=True)
     stamp = dt.datetime.now().strftime("%Y%m%d_%H%M%S")
-    out = FAILED_DIR / f"失败行_{stamp}.csv"
+    out = FAILED_DIR / f"failed_rows_{stamp}.csv"
     with open(out, "w", encoding=ENCODING, newline="") as f:
         w = csv.writer(f)
         w.writerow(["原始行号", "货号", "条码", "错误信息"] + (list(header) if header else []))
@@ -1266,7 +1266,7 @@ def run(file_arg: str, dry_run: bool, headless: bool, keep_csv: bool, station="c
                 return 1
             if completed:
                 log("[完成]  上传完成（任务中心：已完成）")
-                # 仅在“确认上传成功”后备份到 已导入表格/<站>/
+                # 仅在“确认上传成功”后备份到 imported/<station>/
                 # （站点报失败 / 轮询超时 / 未确认完成 都不备份，避免污染已导入台账）
                 backup_after_upload(xlsx_path, station)
                 return 0

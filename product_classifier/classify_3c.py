@@ -2,16 +2,16 @@
 """
 3C数码 希腊站上传表：按中国站分类树分类（3C 数码配件）。
 输入：input/希腊站上传_3C数码.xlsx
-输出：output/希腊站上传_3C数码_已分类.xlsx
+输出：output/希腊站上传_3C数码_classified.xlsx
 """
 import openpyxl, os
 from collections import Counter
 
-HERE = os.path.dirname(os.path.abspath(__file__))          # 商品分类工作区/
+HERE = os.path.dirname(os.path.abspath(__file__))          # product_classifier/
 ROOT = os.path.dirname(HERE)                               # 仓库根
 SRC = os.path.join(ROOT, "input", "希腊站上传_3C数码.xlsx")
 TREE = os.path.join(HERE, "data", "中国站商品分类.xlsx")
-OUT = os.path.join(HERE, "output", "希腊站上传_3C数码_已分类.xlsx")
+OUT = os.path.join(HERE, "output", "希腊站上传_3C数码_classified.xlsx")
 
 # ---------- 1. 中国站分类树合法 3 级链路 ----------
 twb = openpyxl.load_workbook(TREE, data_only=True)

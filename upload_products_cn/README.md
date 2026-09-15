@@ -11,7 +11,7 @@ upload_products_cn/
 ├── clean_old_runs.py      # 清理运行期产物（按天清旧的失败 CSV / 日志）
 ├── README.md
 ├── legacy/                # 旧工具归档（calibrate.py 及 calibrate/ 目录，2026-07-31）
-├── failed/                # 运行产物：失败行 CSV（失败行_*.csv）；调试快照按需生成
+├── failed/                # 运行产物：失败行 CSV（failed_rows_*.csv）；调试快照按需生成
 ├── session.json           # 登录态 cookies（含 token，机密，已被 .gitignore 忽略）
 ├── last_run.json          # 最近一次运行结果（权威记录）
 └── upload.log             # 运行日志
@@ -24,7 +24,7 @@ upload_products_cn/
 - **编码**：站点直接收 xlsx（openpyxl 原样读/写）。早期曾转 UTF-8 CSV，2026-08-15 起站点改版不再接受 CSV，故改为直接提交原始 xlsx。
 - **触发**：手动 CLI，预留调度接口。
 - **安全阀**：基础预检（可读/非空/必需列齐全）+ `--dry-run` 试跑。
-- **失败处理**：解析“导入完成”成功弹窗与“请检查导入数据”校验失败弹窗；失败行的**错误原因**（如「第 N 行：找不到1级商品分类」）会被抽取并写入 `failed/失败行_*.csv`（含原始行号 + 整行原数据）；运行记 `upload.log`；有失败非零退出；**不自动重试**。
+- **失败处理**：解析“导入完成”成功弹窗与“请检查导入数据”校验失败弹窗；失败行的**错误原因**（如「第 N 行：找不到1级商品分类」）会被抽取并写入 `failed/failed_rows_*.csv`（含原始行号 + 整行原数据）；运行记 `upload.log`；有失败非零退出；**不自动重试**。
 
 ## 安装
 ```bash
@@ -61,7 +61,7 @@ python upload.py --file 正确模板.xlsx --save-template-header
     - 第 2 列不符：期望「货号」，实际「货号XXX」
     - 第 33 列不符：期望「供应商名称」，实际「多余列」
   ```
-  同时把完整报告写到 `failed/header_check_<时间>.txt`（含实际表头逐列）。
+  同时把完整报告写到 `failed/header_check_<timestamp>.txt`（含实际表头逐列）。
 - **建议先在 `--dry-run` 下跑一遍**确认表头无误，再正式提交。
 - 站点模板改版后：用上面 `--save-template-header` 刷新基准即可，无需改代码。
 
@@ -111,7 +111,7 @@ set SITE_PASS=你的密码
 2. 进「任务中心」轮询该 `task_id` 的列表接口 `status` 字段（3=已完成成功 / 1=失败 / 0,2=进行中），秒级判定终态；
 3. 终态为失败时，定位该任务行（`data-row-key`==task_id，精确，避免同名多次上传撞错行），点「失败明细」；
 4. **优先拦截任务详情接口响应**（`POST /api` 的 `data.errorDetail` JSON 数组：`[{barcode,code,detail:"第N行:原因"},...]`）——它比偶发为「暂无数据」的弹窗可靠，弹窗仅作兜底；
-5. 失败原因结构化写入 `failed/失败行_*.csv`：**原始行号 + 货号 + 条码 + 错误信息 + 整行原数据**（无「第N行」前缀的错误用货号/条码反查行号）；
+5. 失败原因结构化写入 `failed/failed_rows_*.csv`：**原始行号 + 货号 + 条码 + 错误信息 + 整行原数据**（无「第N行」前缀的错误用货号/条码反查行号）；
 6. 调试快照（`failed/debug_task_*.html` / `task_*.png`）仍按需生成，便于人工核对。
 
 ## 校准脚本（已归档）
@@ -123,7 +123,7 @@ SITE_USER=xxx SITE_PASS=yyy python legacy/calibrate.py
 ## 输出
 - `upload.log`：每次运行一行摘要（时间/文件/成功失败数/异常）。
 - `last_run.json`：**权威结果记录**（时间/成功数/失败数/是否完成/退出码/调试路径/summary）。由于本机 Chrome 关闭时 shell 可能被掐断、进程退出码不可靠，判定成功与否以 `last_run.json` 的 `ok` 字段为准（而非进程退出码）。
-- `failed/失败行_*.csv`：失败行清单，**含原始行号、货号、条码、错误信息、整行原数据**，便于直接定位修改（仅当有失败时）。
+- `failed/failed_rows_*.csv`：失败行清单，**含原始行号、货号、条码、错误信息、整行原数据**，便于直接定位修改（仅当有失败时）。
 - `failed/debug_task_*.html` / `failed/task_*.png`：最近一次的结果页 HTML / 截图（调试用，自动被 `.gitignore` 忽略）。
 - `session.json`：保存的登录会话 cookies（含 token，机密，勿外传、勿进版本库）。
 
@@ -142,7 +142,7 @@ SITE_USER=xxx SITE_PASS=yyy python legacy/calibrate.py
 导入成功：共11条，成功11条（新增0条，修改11条），失败0条
 ```
 - `upload.py` 现按此摘要行精确计数（共/成功/新增/修改/失败），并写入 `last_run.json` 的 `summary` 字段。
-- `成功明细` 弹窗会显示该摘要；`失败明细` 弹窗除摘要外，若含「第 N 行：xxx」逐行错误也会抽取写入 `failed/失败行_*.csv`。
+- `成功明细` 弹窗会显示该摘要；`失败明细` 弹窗除摘要外，若含「第 N 行：xxx」逐行错误也会抽取写入 `failed/failed_rows_*.csv`。
 - 解析两种结果弹窗（旧版「导入完成 / 总行数 / 更新商品 / 新增商品」已不再出现，旧解析逻辑保留为兼容但不再命中）：
   - 成功：`导入成功 / 共 N 条 / 成功 N 条（新增 X / 修改 Y）/ 失败 Z 条`。
   - 失败：`失败明细` 按钮 + 逐行错误。

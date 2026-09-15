@@ -2,15 +2,15 @@
 """
 家居用品 希腊站上传表：纠正错误中文品名 + 按中国站分类树分类。
 输入：input/希腊站上传_家居用品.xlsx
-输出：output/希腊站上传_家居用品_已分类.xlsx
+输出：output/希腊站上传_家居用品_classified.xlsx
 """
 import openpyxl, re, os
 
-HERE = os.path.dirname(os.path.abspath(__file__))          # 商品分类工作区/
+HERE = os.path.dirname(os.path.abspath(__file__))          # product_classifier/
 ROOT = os.path.dirname(HERE)                               # 仓库根
 SRC = os.path.join(ROOT, "input", "希腊站上传_家居用品.xlsx")
 TREE = os.path.join(HERE, "data", "中国站商品分类.xlsx")
-OUT = os.path.join(HERE, "output", "希腊站上传_家居用品_已分类.xlsx")
+OUT = os.path.join(HERE, "output", "希腊站上传_家居用品_classified.xlsx")
 
 # ---------- 1. 载入中国站分类树，构建合法 3 级链路集合 ----------
 twb = openpyxl.load_workbook(TREE, data_only=True)

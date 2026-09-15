@@ -8,7 +8,7 @@
 import openpyxl, os
 from collections import Counter
 
-HERE = os.path.dirname(os.path.abspath(__file__))          # 商品分类工作区/
+HERE = os.path.dirname(os.path.abspath(__file__))          # product_classifier/
 ROOT = os.path.dirname(HERE)                               # 仓库根
 BASE = os.path.join(ROOT, "input")                         # 待分类的希腊站上传表
 OUTDIR = os.path.join(HERE, "output")
@@ -103,7 +103,7 @@ for fname, fn in jobs:
         else:
             approx += 1; approx_rows.append((r, n, flag, ' / '.join(chain)))
     tag = fname.replace('希腊站上传_','').replace('.xlsx','')
-    out = os.path.join(OUTDIR, fname.replace('.xlsx','_已分类.xlsx'))
+    out = os.path.join(OUTDIR, fname.replace('.xlsx','_classified.xlsx'))
     wb.save(out)
     summary[tag]=(exact,approx,uncls)
     print(f"\n{'='*70}\n[{tag}] {fname}")

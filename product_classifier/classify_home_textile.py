@@ -2,7 +2,7 @@
 """
 家纺 希腊站上传表：按中国站分类树分类。
 输入：input/希腊站上传_家纺.xlsx
-输出：商品分类工作区/output/希腊站上传_家纺_已分类.xlsx
+输出：product_classifier/output/希腊站上传_家纺_classified.xlsx
 策略：很多行中文品名只有尺寸(如 60x180 / 270x280)，需结合希腊语品名判定类型
       (ΚΟΥΒΕΡΤΑ=毛毯 / ΠΑΤΑΚΙ ΔΑΠΕΔΟΥ=地垫 / ΣΕΤ ΣΕΝΤΟΝΙΩΝ=床单套 /
        ΑΔΙΑΒΡΟΧΟ ΚΑΛΥΜΜΑ=防水罩 / ΤΡΑΠΕΖΟΜΑΝΤΗΛΟ=桌布 / ΚΟΥΡΤΙΝΑ=窗帘)。
@@ -10,10 +10,10 @@
 import openpyxl, os
 from collections import Counter
 
-HERE = os.path.dirname(os.path.abspath(__file__))          # 商品分类工作区/
+HERE = os.path.dirname(os.path.abspath(__file__))          # product_classifier/
 ROOT = os.path.dirname(HERE)                               # 仓库根
 SRC = os.path.join(ROOT, "input", "希腊站上传_家纺.xlsx")
-OUT = os.path.join(HERE, "output", "希腊站上传_家纺_已分类.xlsx")
+OUT = os.path.join(HERE, "output", "希腊站上传_家纺_classified.xlsx")
 TREE = os.path.join(HERE, "data", "中国站商品分类.xlsx")
 
 twb = openpyxl.load_workbook(TREE, data_only=True); tws = twb.active

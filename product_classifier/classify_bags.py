@@ -3,15 +3,15 @@
 箱包 希腊站上传表：按中国站分类树分类（80 个手提女包）。
 用户口径：这批包(TΣΑΝΤΑ)仅泛称"包"+型号+颜色，无包型信息，统一归 箱包系列/女包/手提包。
 输入：input/希腊站上传_箱包.xlsx
-输出：商品分类工作区/output/希腊站上传_箱包_已分类.xlsx
+输出：product_classifier/output/希腊站上传_箱包_classified.xlsx
 """
 import openpyxl, os
 from collections import Counter
 
-HERE = os.path.dirname(os.path.abspath(__file__))          # 商品分类工作区/
+HERE = os.path.dirname(os.path.abspath(__file__))          # product_classifier/
 ROOT = os.path.dirname(HERE)                               # 仓库根
 SRC = os.path.join(ROOT, "input", "希腊站上传_箱包.xlsx")
-OUT = os.path.join(HERE, "output", "希腊站上传_箱包_已分类.xlsx")
+OUT = os.path.join(HERE, "output", "希腊站上传_箱包_classified.xlsx")
 TREE = os.path.join(HERE, "data", "中国站商品分类.xlsx")
 
 twb = openpyxl.load_workbook(TREE, data_only=True); tws = twb.active

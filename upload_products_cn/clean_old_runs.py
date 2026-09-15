@@ -9,7 +9,7 @@
     python clean_old_runs.py --dry      # 只预览，不真删
 
 说明:
-    failed/ 下的“失败行_*.csv”会随每次失败上传累积，这里按修改时间清旧留新；
+    failed/ 下的“failed_rows_*.csv”会随每次失败上传累积，这里按修改时间清旧留新；
     upload.log / last_run.json / session.json 不在清理范围（session.json 含登录态，勿删）。
 """
 import argparse
@@ -20,7 +20,7 @@ from pathlib import Path
 BASE = Path(__file__).resolve().parent
 FAILED = BASE / "failed"
 LOG = BASE / "upload.log"
-CSV_RE = re.compile(r"^失败行_\d{8}_\d{6}\.csv$")
+CSV_RE = re.compile(r"^failed_rows_\d{8}_\d{6}\.csv$")
 
 
 def main():

@@ -8,7 +8,7 @@
 # ---------- 凭据（最高优先级：泄露即他人可顶替你登录）----------
 session.json
 last_run.json
-令牌.txt
+token.txt
 *.token
 *.pat
 .env
@@ -50,30 +50,28 @@ _*.html
 
 # ---------- 运行结果（可重新生成）----------
 **/output/*
-**/输出/*
 !**/output/.gitkeep
-!**/输出/.gitkeep
 
 # ---------- 业务数据（体积大 + 含商业信息，绝不进库）----------
 # 客户商品导入表
-货号匹配器/商品导入/**/*.xlsx
-货号匹配器/商品导入/*.xlsx
-!货号匹配器/商品导入/商品导入模板*.xlsx
-!货号匹配器/商品导入/**/商品导入模板*.xlsx
-!货号匹配器/商品导入/商品导入模板*副本*.xlsx
+sku_matcher/imports/**/*.xlsx
+sku_matcher/imports/*.xlsx
+!sku_matcher/imports/商品导入模板*.xlsx
+!sku_matcher/imports/**/商品导入模板*.xlsx
+!sku_matcher/imports/商品导入模板*副本*.xlsx
 # SAP 全量导出
-货号匹配器/数据源/A006*.xlsx
+sku_matcher/data_source/A006*.xlsx
 # 待匹配原始货号清单
-货号匹配器/输入/**/*.xlsx
-货号匹配器/输入/*.xlsx
-!货号匹配器/输入/商品导入模板*.xlsx
+sku_matcher/input/**/*.xlsx
+sku_matcher/input/*.xlsx
+!sku_matcher/input/商品导入模板*.xlsx
 # 分类树 / 待分类源表 / 主数据库
-商品分类工作区/data/*.xlsx
-商品分类工作区/input/*
-商品分类工作区/master/*
-!商品分类工作区/input/.gitkeep
+product_classifier/data/*.xlsx
+product_classifier/input/*
+product_classifier/master/*
+!product_classifier/input/.gitkeep
 # 上传成功后的备份台账
-已导入表格/**
+imported/**
 # 登录态快照 / 浏览器抓取产物
 upload_products_cn/legacy/calibrate/
 
