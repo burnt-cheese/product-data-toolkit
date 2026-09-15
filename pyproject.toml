@@ -1,0 +1,10 @@
+[project]
+name = "product-data-toolkit"
+version = "0.1.0"
+requires-python = ">=3.13"
+dependencies = [
+    "lxml>=6.1.2",
+    "openpyxl>=3.1.5",
+    "playwright>=1.62.0",
+    "xlrd>=2.0.2",
+]

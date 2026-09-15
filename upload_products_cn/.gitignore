@@ -1,0 +1,18 @@
+# --- 运行期生成的产物（不进版本库）---
+# 登录态 cookies（含 token，机密）
+session.json
+# 最近一次运行结果与日志
+last_run.json
+upload.log
+# 失败明细 CSV 与调试快照（批量产生）
+failed/
+# Python 缓存
+__pycache__/
+*.pyc
+
+# --- 诊断/调试脚本（临时）---
+_*.py
+_*.log
+_*.out
+_*.html
+_*.err
